@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Pack Opening Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            margin: 50px auto;
+            max-width: 500px;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .pack {
+            margin: 20px auto;
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(45deg, #6b0f1a, #b91372);
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .card {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            width: 100px;
+            height: 150px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-50px);
+            animation: reveal 0.5s ease-out forwards;
+        }
+
+        .card img {
+            max-width: 100%;
+            max-height: 100px;
+        }
+
+        .common {
+            background-color: gray;
+        }
+
+        .rare {
+            background-color: blue;
+
+        }
+
+        .epic {
+            background-color: purple;
+
+        }
+
+        .legendary {
+            background-color: yellow;
+
+        }
+
+        .mythical {
+            background-color: orange;
+
+        }
+
+        @keyframes reveal {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes openPack {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        .inventory {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 10px;
+            width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .inventory h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .sell-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px;
+            font-size: 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .sell-button:hover {
+            background-color: #218838;
+        }
+
+
+
+
+        /* FGHKFJHDGKHDFKGHK */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: #f1f1f1;
+            border-right: 1px solid #ccc;
+            overflow-y: auto;
+            padding: 10px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            /* Default fully visible */
+            transition: opacity 0.3s;
+        }
+
+        .sidebar img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .sidebar li.locked {
+            opacity: 0.5;
+            /* Make locked cards semi-transparent */
+            filter: grayscale(100%);
+            /* Apply grayscale to images */
+            pointer-events: none;
+            /* Prevent interaction with locked cards */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>Card Index</h2>
+        <ul id="card-index"></ul>
+    </div>
+    <div class="container">
+        <h1>Samu TCG Pack Opener</h1>
+        <p>Points: <span id="points">0</span></p>
+        <button onclick="incrementPoints()">Click to Earn Points</button>
+        <div class="pack" id="booster" onclick="openPack()">Click to Open Pack</div>
+        <div id="pack" style="margin-top: 20px;"></div>
+    </div>
+    <div class="inventory" id="inventory">
+        <h2>Inventory</h2>
+        <div id="inventory-list"></div>
+    </div>
+    <script>
+        let points = 0;
+        const inventory = {};
+
+        const cards = [
+            { name: "Todoroki Samu", rarity: "common", img: "todoroki samu tcg.png" },
+            { name: "Nanami Samu", rarity: "common", img: "nanami samu tcg.png" },
+            { name: "Hakari Samu", rarity: "common", img: "hakari samu tcg.png" },
+            { name: "Mrożon Samu", rarity: "common", img: "MROZON SAMU tcg.png" },
+            { name: "Trump Samu", rarity: "common", img: "Trump samu tcg.png" },
+            { name: "Bear5 Samu", rarity: "common", img: "bear5 samu tcg.png" },
+            { name: "Steve Samu", rarity: "rare", img: "steve samu tcg.png" },
+            { name: "Red Scout Samu", rarity: "rare", img: "red scout samu tcg.png" },
+            { name: "Blue Scout Samu", rarity: "rare", img: "blue scout samu tcg.png" },
+            { name: "Miku Samu", rarity: "rare", img: "miku samu tcg.png" },
+            { name: "BatSamu", rarity: "rare", img: "batsamu tcg.png" },
+            { name: "Jolly Samu", rarity: "rare", img: "Jolly samu tcg.png" },
+            { name: "Spamton Samu", rarity: "epic", img: "spamton samu tcg.png" },
+            { name: "Homelander Samu", rarity: "epic", img: "Homelander samu tcg.png" },
+            { name: "Lethal Samu", rarity: "epic", img: "lethal samu tcg.png" },
+            { name: "DrSamuDisrespect", rarity: "epic", img: "drsamurespect tcg.png" },
+            { name: "Faith Samu", rarity: "legendary", img: "faith samu tcg.png" },
+            { name: "Samu Freeman", rarity: "legendary", img: "samu freeman tcg.png" },
+            { name: "Ichisamu", rarity: "legendary", img: "ichisamu tcg.png" },
+            { name: "Samu Wright", rarity: "mythical", img: "Samu Wright tcg.png" }
+        ];
+
+        function getRandomCard() {
+            const roll = Math.random() * 100;
+
+            if (roll < 80) {
+                // Common cards
+                const commonCards = cards.filter(card => card.rarity === "common");
+                return commonCards[Math.floor(Math.random() * commonCards.length)];
+            } else if (roll < 95) {
+                // Rare cards
+                const rareCards = cards.filter(card => card.rarity === "rare");
+                return rareCards[Math.floor(Math.random() * rareCards.length)];
+            } else if (roll < 99) {
+                // Epic cards
+                const epicCards = cards.filter(card => card.rarity === "epic");
+                return epicCards[Math.floor(Math.random() * epicCards.length)];
+            } else if (roll < 99.99) {
+                // Legendary cards
+                const legendaryCards = cards.filter(card => card.rarity === "legendary");
+                return legendaryCards[Math.floor(Math.random() * legendaryCards.length)];
+            } else {
+                // Mythical cards
+                const mythicalCards = cards.filter(card => card.rarity === "mythical");
+                return mythicalCards[Math.floor(Math.random() * mythicalCards.length)];
+            }
+        }
+
+
+        function updatePointsDisplay() {
+            document.getElementById("points").textContent = points;
+        }
+
+        function incrementPoints() {
+            points += 10;
+            updatePointsDisplay();
+        }
+
+        function addToInventory(card) {
+            if (inventory[card.name]) {
+                inventory[card.name].count += 1;
+            } else {
+                inventory[card.name] = { rarity: card.rarity, img: card.img, count: 1 };
+            }
+            updateInventoryDisplay();
+            updateInventoryAndIndex();
+
+        }
+
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById("inventory-list");
+            inventoryList.innerHTML = "";
+
+            for (const [cardName, cardData] of Object.entries(inventory)) {
+                const item = document.createElement("div");
+                item.className = "inventory-item";
+
+                item.innerHTML = `
+                    <span><img src="${cardData.img}" alt="${cardName}" style="width: 40px; height: 40px;"> ${cardName} (${cardData.rarity})</span>
+                    <span>x${cardData.count}</span>
+                    <button class="sell-button" onclick="sellCard('${cardName}')">Sell</button>
+                `;
+
+                inventoryList.appendChild(item);
+            }
+        }
+
+        function sellCard(cardName) {
+            if (inventory[cardName]) {
+                const rarity = inventory[cardName].rarity;
+                const value = rarity === "common" ? 10 : rarity === "rare" ? 20 : rarity === "epic" ? 40 : rarity === "legendary" ? 80 : 200;
+                points += value;
+                inventory[cardName].count -= 1;
+
+                if (inventory[cardName].count === 0) {
+                    delete inventory[cardName];
+                }
+
+                updatePointsDisplay();
+                updateInventoryDisplay();
+                updateInventoryAndIndex();
+
+            }
+        }
+
+        function openPack() {
+            if (points < 50) {
+                alert("Not enough points to open the pack. Earn more points!");
+                return;
+            }
+            updateInventoryAndIndex();
+
+            points -= 50;
+            updatePointsDisplay();
+
+            const booster = document.getElementById("booster");
+            const pack = document.getElementById("pack");
+
+            booster.style.animation = "openPack 1s forwards";
+            setTimeout(() => {
+                booster.style.display = "none";
+                pack.innerHTML = ""; // Clear previous cards
+
+                for (let i = 0; i < 5; i++) { // Each pack contains 5 cards
+                    const card = getRandomCard();
+                    addToInventory(card);
+
+                    const cardDiv = document.createElement("div");
+                    cardDiv.className = `card ${card.rarity}`;
+
+                    cardDiv.innerHTML = `<img src="${card.img}" alt="${card.name}"><br>${card.name}`;
+                    pack.appendChild(cardDiv);
+                }
+
+                setTimeout(() => {
+                    pack.innerHTML = "";
+                    booster.style.display = "flex";
+                    booster.style.animation = "shake 0.5s infinite";
+                }, 5000); // Display cards for 5 seconds, then show booster pack again
+            }, 1000); // Delay until the pack animation ends
+
+        }
+        function populateCardIndex() {
+            const cardIndex = document.getElementById('card-index');
+            cardIndex.innerHTML = ""; // Clear existing entries
+
+            cards.forEach(card => {
+                const li = document.createElement('li');
+                li.className = card.rarity;
+
+                // Check if the card exists in the inventory and has a count > 0
+                const isUnlocked = inventory[card.name] && inventory[card.name].count > 0;
+
+                if (!isUnlocked) {
+                    li.classList.add('locked'); // Apply locked styles
+                }
+
+                li.innerHTML = `
+            <img src="${card.img}" alt="${card.name}" />
+            <span>${card.name} (${card.rarity})</span>
+        `;
+
+                cardIndex.appendChild(li);
+            });
+        }
+
+        // Ensure the index updates whenever inventory changes
+        function updateInventoryAndIndex() {
+            updateInventoryDisplay(); // Update the inventory display
+            populateCardIndex(); // Update the index with the latest inventory state
+        }
+
+        // Call this function instead of just updateInventoryDisplay
+        updateInventoryAndIndex();
+
+
+
+        updatePointsDisplay();
+        updateInventoryDisplay();
+    </script>
+</body>
+
+</html>

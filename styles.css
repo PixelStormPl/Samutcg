@@ -1,0 +1,90 @@
+/* styles.css */
+body {
+    margin: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+    background-color: #282c34;
+}
+
+#color-picker {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+}
+
+.color {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+#green {
+    background-color: green;
+}
+
+#red {
+    background-color: red;
+}
+
+#blue {
+    background-color: blue;
+}
+
+#yellow {
+    background-color: yellow;
+}
+
+#purple {
+    background-color: purple;
+}
+
+#black {
+    background-color: black;
+}
+
+#grid-board {
+    display: grid;
+    width: 1920px;
+    height: 1080px;
+    grid-template-columns: repeat(192, 10px);
+    /* Adjust based on square size */
+    grid-template-rows: repeat(108, 10px);
+    cursor: pointer;
+}
+
+.grid-square {
+    border: 1px solid #444;
+    background-color: #555;
+}
+
+/* Add this to your CSS */
+
+.tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 4px;
+    display: none;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.grid-square {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #333;
+    display: inline-block;
+}
+
+.grid-board {
+    display: grid;
+    grid-template-columns: repeat(192, 10px);
+    grid-template-rows: repeat(108, 10px);
+    gap: 1px;
+}
